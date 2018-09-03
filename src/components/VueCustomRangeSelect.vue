@@ -9,12 +9,18 @@
         tabindex="0"
         v-on:click="toggleMenu"
         v-on:keyup.enter="toggleMenu")
-            +e.SPAN.selected {{ currentValue.label }}
-            +e.INPUT.current-value(
-            v-if="isSearchable"
-            type="search"
-            v-bind:placeholder="placeholder"
-            v-model="searchValue")
+            +e.input-wrapper
+                +e.INPUT.selected(
+                v-bind:readonly="!isSearchable"
+                type="search"
+                v-bind:placeholder="placeholder"
+                v-model="currentValue.label || value[itemLabel]")
+                +e.SVG.toggle-icon#arrow(
+                width="12px"
+                height="6px"
+                fill="#bbbdc0"
+                viewBox="0 0 6 3")
+                    polygon(points="0 0 3 3 6 0 0 0")
             +e.UL.list(v-show="isOpenMenu")
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
@@ -135,24 +141,43 @@
         box-sizing: border-box;
     }
 
+    .vcr-select__toggle-icon {
+        position: absolute;
+        top: 40%;
+        pointer-events: none;
+        right: 15px;
+    }
+
     .vcr-select__selected {
         display: block;
         width: 100%;
         height: 40px;
         background-color: #ffffff;
         padding: 10px 15px;
+        border: 0;
         font-size: 16px;
         cursor: pointer;
     }
 
     .vcr-select__select-wrapper {
+        position: relative;
+    }
 
+    .vcr-select__input-wrapper {
+        position: relative;
     }
 
     .vcr-select__list {
+        position: absolute;
+        top: 40px;
+        left: -1px;
         list-style: none;
         margin: 0;
+        width: 382px;
         padding: 0 10px;
+        border-left: 1px solid #bbbdc0;
+        border-right: 1px solid #bbbdc0;
+        border-bottom: 1px solid #bbbdc0;
     }
 
     .vcr-select__item {

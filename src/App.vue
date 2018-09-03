@@ -2,6 +2,7 @@
     div#app
         vue-custom-range-select(
         v-on:input="setValue"
+        v-bind:value="value"
         v-bind:options="options"
         itemLabel="text"
         itemValue="text")
@@ -34,8 +35,8 @@
             }
         },
         computed: {
-            value (): string | number {
-                return this.options[0].text
+            value (): object {
+                return this.options[0]
             }
         },
         components: {
