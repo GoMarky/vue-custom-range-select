@@ -2,9 +2,13 @@
     include ../helpers/pug/mixins.pug
 
     +b.vcr-select(
+    v-bind:dir="dir"
     v-bind:style="dropDownStyles"
     v-bind:id="selectID")
-        +e.select-wrapper(v-on:click="toggleMenu")
+        +e.select-wrapper(
+        tabindex="0"
+        v-on:click="toggleMenu"
+        v-on:keyup.enter="toggleMenu")
             +e.SPAN.selected {{ currentValue.label }}
             +e.INPUT.current-value(
             v-if="isSearchable"
@@ -15,6 +19,7 @@
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
                     type="button"
+                    v-on:keyup.enter="setValue(item)"
                     v-on:click="setValue(item)") {{ item.label }}
 
 </template>
@@ -39,6 +44,7 @@
         methods: {
             setValue (val: any) {
                 this.currentValue = val
+                this.$emit('input', val.value)
             },
             toggleMenu () {
                 this.isOpenMenu = !this.isOpenMenu

@@ -1,6 +1,7 @@
 <template lang="pug">
     div#app
         vue-custom-range-select(
+        v-on:input="setValue"
         v-bind:options="options"
         itemLabel="text"
         itemValue="text")
@@ -14,9 +15,9 @@
         data () {
             return {
                 options: [{
-                        value: 1,
-                        text: 'first'
-                    },
+                    value: 1,
+                    text: 'first'
+                },
                     {
                         value: 2,
                         text: 'second'
@@ -25,6 +26,11 @@
                         value: 3,
                         text: 'third'
                     }]
+            }
+        },
+        methods: {
+            setValue (val: string) {
+                console.log(val)
             }
         },
         computed: {
