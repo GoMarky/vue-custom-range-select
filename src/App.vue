@@ -1,7 +1,9 @@
 <template lang="pug">
     div#app
         vue-custom-range-select(
-        v-bind:options="options")
+        v-bind:options="options"
+        itemLabel="text"
+        itemValue="text")
 </template>
 
 <script lang="ts">
@@ -9,22 +11,31 @@
     import Vue from 'vue'
 
     export default Vue.extend({
-        data() {
+        data () {
             return {
-                options: [1, 2, 3, 4, 5, 6, 7, 8,]
+                options: [{
+                        value: 1,
+                        text: 'first'
+                    },
+                    {
+                        value: 2,
+                        text: 'second'
+                    },
+                    {
+                        value: 3,
+                        text: 'third'
+                    }]
             }
         },
         computed: {
-            value(): string|number {
-                return this.options[0];
+            value (): string | number {
+                return this.options[0].text
             }
         },
         components: {
             VueCustomRangeSelect
         }
     })
-
-
 </script>
 
 <style lang="scss">

@@ -2,16 +2,21 @@
     include ../helpers/pug/mixins.pug
 
     +b.vcr-select(
+    v-bind:style="dropDownStyles"
     v-bind:id="selectID")
-        +e.INPUT.current-value(
-        type="text"
-        v-bind:placeholder="placeholder"
-        v-bind:value="currentValue")
-        +e.UL.list
-            +e.LI.item(v-for="item in options")
-                +e.BUTTON.item-button(
-                type="button"
-                v-on:click="setValue(item)") {{ item }}
+        +e.select-wrapper(v-on:click="toggleMenu")
+            +e.SPAN.selected {{ currentValue.label }}
+            +e.INPUT.current-value(
+            v-if="isSearchable"
+            type="search"
+            v-bind:placeholder="placeholder"
+            v-model="searchValue")
+            +e.UL.list(v-show="isOpenMenu")
+                +e.LI.item(v-for="item in currentValues")
+                    +e.BUTTON.item-button(
+                    type="button"
+                    v-on:click="setValue(item)") {{ item.label }}
+
 </template>
 
 <script lang="ts">
@@ -23,15 +28,36 @@
         data () {
             return {
                 selectID: `vue-custom-range-select-${helper.randomString(5)}`,
-                currentValue: ''
+                currentValue: {
+                    label: '',
+                    value: ''
+                },
+                searchValue: '',
+                isOpenMenu: false
             }
         },
         methods: {
             setValue (val: any) {
                 this.currentValue = val
+            },
+            toggleMenu () {
+                this.isOpenMenu = !this.isOpenMenu
             }
         },
-        computed: {},
+        computed: {
+            currentValues (): any {
+                return this.$props.options
+                    .map((it: any) => {
+                        return {
+                            value: it.value,
+                            label: it[this.$props.itemLabel]
+                        }
+                    })
+            },
+            isHavingValue (): boolean {
+                return this.currentValue.label.length > 0
+            }
+        },
         props: {
             value: {
                 type: [String, Object, Array],
@@ -41,7 +67,7 @@
             options: {
                 type: Array,
                 required: false,
-                default() {
+                default () {
                     return []
                 }
             },
@@ -55,7 +81,7 @@
             },
             isSearchable: {
                 type: Boolean,
-                default: true
+                default: false
             },
             multiple: {
                 type: Boolean,
@@ -65,15 +91,13 @@
                 type: String,
                 default: ''
             },
-            label: {
+            itemValue: {
+                type: String,
+                default: 'value'
+            },
+            itemLabel: {
                 type: String,
                 default: 'label'
-            },
-            onChange: {
-                type: Function,
-                default(val: any) {
-                    this.$emit('input', val)
-                }
             },
             dir: {
                 type: String,
@@ -82,6 +106,13 @@
             fullScreenMobile: {
                 type: Boolean,
                 default: true
+            },
+            dropDownStyles: {
+                type: Object,
+                required: false,
+                default () {
+                    return {}
+                }
             }
         }
     })
@@ -89,12 +120,56 @@
 
 <style lang="scss">
 
-    ul {
+    .vcr-select {
+        width: 380px;
+        border: 1px solid #bbbdc0;
+    }
+
+    .vcr-select * {
+        box-sizing: border-box;
+    }
+
+    .vcr-select__selected {
+        display: block;
+        width: 100%;
+        height: 40px;
+        background-color: #ffffff;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .vcr-select__select-wrapper {
 
     }
 
-    li {
+    .vcr-select__list {
+        list-style: none;
+        margin: 0;
+        padding: 0 10px;
+    }
 
+    .vcr-select__item {
+        margin: 0;
+        border-top: 1px solid #cccccc;
+    }
+
+    .vcr-select__item-button {
+        background: none;
+        border: none;
+        height: 40px;
+        margin: 0;
+        padding: 10px 15px;
+        font-size: 16px;
+        color: #222222;
+        width: 100%;
+        text-align: left;
+        display: block;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #e1f5f7;
+        }
     }
 
 </style>
