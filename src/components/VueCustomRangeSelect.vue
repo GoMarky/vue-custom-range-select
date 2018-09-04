@@ -5,10 +5,11 @@
     v-bind:dir="dir"
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
-    v-clickoutside="click")
+    v-clickoutside="outsideClick")
         +e.select-wrapper(
         tabindex="-1")
             +e.input-wrapper
+                +e.SPAN.current-value {{ currentValue.label || value[itemLabel] }}
                 +e.INPUT.selected(
                 type="search"
                 ref="search"
@@ -17,7 +18,7 @@
                 v-on:focus="onSearchFocus"
                 v-on:blur="onSearchBlur"
                 v-on:click="toggleMenu"
-                v-on:keyup.enter="openMenu"
+                v-on:keyup.enter="toggleMenu"
                 v-bind:placeholder="placeholder"
                 v-bind:readonly="!isSearchable"
                 v-model="currentValue.label || value[itemLabel]")
@@ -32,7 +33,7 @@
                     +e.BUTTON.item-button(
                     type="button"
                     v-on:keyup.enter="setValue(item)"
-                    v-on:click="setValue(item)") {{ item.label }}
+                    v-on:mousedown.prevent="setValue(item)") {{ item.label }}
 
 </template>
 
@@ -59,6 +60,7 @@
             setValue (val: any) {
                 this.currentValue = val
                 this.$emit('input', val.value)
+                this.closeMenu()
             },
             toggleMenu () {
                 this.isOpen = !this.isOpen
@@ -81,11 +83,11 @@
             onSearchFocus () {
                 this.inFocus = true
             },
-            click () {
+            outsideClick () {
                 this.closeMenu()
             },
             onEscape () {
-                (this.$refs['search'] as HTMLElement).blur()
+                this.closeMenu()
             }
         },
         computed: {
@@ -185,15 +187,24 @@
         right: 15px;
     }
 
-    .vcr-select__selected {
+    .vcr-select__current-value {
+        position: absolute;
+        left: 15px;
+        top: 10px;
+        font-size: 16px;
+    }
+
+    .vcr-select__selected, .vcr-select__selected:focus {
         display: block;
         width: 100%;
         height: 40px;
+        background: none;
         background-color: #ffffff;
         padding: 10px 15px;
-        font-size: 16px;
         cursor: pointer;
-        user-select: none;
+        font-size: 0;
+        outline: none;
+        box-shadow: inset 0 0 0 0 red;
         border: 1px solid #bbbdc0;
 
         &:focus {

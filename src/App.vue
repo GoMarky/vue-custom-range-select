@@ -6,6 +6,7 @@
         v-bind:options="options"
         itemLabel="text"
         itemValue="text")
+        div {{ output }}
 </template>
 
 <script lang="ts">
@@ -26,11 +27,14 @@
                     {
                         value: 3,
                         text: 'third'
-                    }]
+                    }],
+                output: ''
             }
         },
         methods: {
-            setValue (val: string) {}
+            setValue (val: string) {
+                this.output = val
+            }
         },
         computed: {
             value (): object {
