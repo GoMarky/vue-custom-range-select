@@ -1,26 +1,43 @@
-# vue-custom-range-select
+# Vue-Custom-Range-Select beta
 
-## Project setup
-```
-yarn install
-```
+# Demo
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+The demo page is coming soon.
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+# Requirements
 
-### Lints and fixes files
-```
-yarn run lint
+- [Vue.js](https://github.com/yyx990803/vue) `^2.0.0`
+
+# Installation
+
+## npm
+
+```shell
+$ npm i vue-custom-range-select
 ```
 
-### Run your unit tests
-```
-yarn run test:unit
-```
+## yarn 
+ yarn add vue-custom-range-select
+
+# Usage
+
+```html
+<script>
+
+// for Vue 2.0
+import VueCustomRangeSelect from 'vue-custom-range-select'
+import 'vue-custom-range-select/dist/flock.css'
+
+// see docs for available options
+
+// make sure we can use it in our components
+Vue.use(VueCustomRangeSelect);
+
+</script>
+
+# API
+
+# License
+
+[The MIT License](http://opensource.org/licenses/MIT)
+
