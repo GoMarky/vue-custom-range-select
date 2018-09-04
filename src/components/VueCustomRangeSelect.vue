@@ -7,17 +7,19 @@
     v-bind:id="selectID"
     v-clickoutside="click")
         +e.select-wrapper(
-        tabindex="0"
-        v-on:focus="onSearchFocus"
-        v-on:blur="onSearchBlur"
-        v-on:click="toggleMenu"
-        v-on:keyup.enter="toggleMenu")
+        tabindex="-1")
             +e.input-wrapper
                 +e.INPUT.selected(
                 type="search"
+                ref="search"
+                tabindex="1"
+                v-on:keyup.esc="onEscape"
+                v-on:focus="onSearchFocus"
+                v-on:blur="onSearchBlur"
+                v-on:click="toggleMenu"
+                v-on:keyup.enter="openMenu"
                 v-bind:placeholder="placeholder"
                 v-bind:readonly="!isSearchable"
-                v-on:keyup.enter="openMenu"
                 v-model="currentValue.label || value[itemLabel]")
                 +e.SVG.toggle-icon#arrow(
                 width="12px"
@@ -80,7 +82,10 @@
                 this.inFocus = true
             },
             click () {
-                this.closeMenu();
+                this.closeMenu()
+            },
+            onEscape () {
+                (this.$refs['search'] as HTMLElement).blur()
             }
         },
         computed: {
@@ -166,7 +171,7 @@
 
     .vcr-select {
         width: 380px;
-        border: 1px solid #bbbdc0;
+        margin-left: 20px;
     }
 
     .vcr-select * {
@@ -186,9 +191,14 @@
         height: 40px;
         background-color: #ffffff;
         padding: 10px 15px;
-        border: 0;
         font-size: 16px;
         cursor: pointer;
+        user-select: none;
+        border: 1px solid #bbbdc0;
+
+        &:focus {
+            border-color: #0cc7ff;
+        }
     }
 
     .vcr-select__select-wrapper {
