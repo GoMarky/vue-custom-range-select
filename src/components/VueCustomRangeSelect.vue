@@ -4,16 +4,20 @@
     +b.vcr-select(
     v-bind:dir="dir"
     v-bind:style="dropDownStyles"
-    v-bind:id="selectID")
+    v-bind:id="selectID"
+    v-clickoutside="click")
         +e.select-wrapper(
         tabindex="0"
+        v-on:focus="onSearchFocus"
+        v-on:blur="onSearchBlur"
         v-on:click="toggleMenu"
         v-on:keyup.enter="toggleMenu")
             +e.input-wrapper
                 +e.INPUT.selected(
-                v-bind:readonly="!isSearchable"
                 type="search"
                 v-bind:placeholder="placeholder"
+                v-bind:readonly="!isSearchable"
+                v-on:keyup.enter="openMenu"
                 v-model="currentValue.label || value[itemLabel]")
                 +e.SVG.toggle-icon#arrow(
                 width="12px"
@@ -21,7 +25,7 @@
                 fill="#bbbdc0"
                 viewBox="0 0 6 3")
                     polygon(points="0 0 3 3 6 0 0 0")
-            +e.UL.list(v-show="isOpenMenu")
+            +e.UL.list(v-show="isOpen")
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
                     type="button"
@@ -44,7 +48,9 @@
                     value: ''
                 },
                 searchValue: '',
-                isOpenMenu: false
+                isOpen: false,
+                isSearching: false,
+                inFocus: false
             }
         },
         methods: {
@@ -53,7 +59,28 @@
                 this.$emit('input', val.value)
             },
             toggleMenu () {
-                this.isOpenMenu = !this.isOpenMenu
+                this.isOpen = !this.isOpen
+            },
+            openMenu () {
+                if (this.inFocus) {
+                    this.isOpen = true
+                }
+            },
+            closeMenu () {
+                this.isOpen = false
+            },
+            onSearchBlur () {
+                this.inFocus = false
+
+                if (!this.isSearching) {
+                    this.closeMenu()
+                }
+            },
+            onSearchFocus () {
+                this.inFocus = true
+            },
+            click () {
+                this.closeMenu();
             }
         },
         computed: {
@@ -71,6 +98,11 @@
             }
         },
         props: {
+            nativeMode: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
             value: {
                 type: [String, Object, Array],
                 required: false,

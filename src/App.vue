@@ -30,9 +30,7 @@
             }
         },
         methods: {
-            setValue (val: string) {
-                console.log(val)
-            }
+            setValue (val: string) {}
         },
         computed: {
             value (): object {
