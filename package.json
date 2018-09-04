@@ -1,10 +1,40 @@
 {
   "name": "vue-custom-range-select",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "author": {
+    "name": "Andrew",
+    "email": "swen295@gmail.com"
+  },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "plugin",
+    "select",
+    "vue-select",
+    "range-select"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teodorDre/vue-custom-range-select"
+  },
+  "bugs": {
+    "url": "https://github.com/teodorDre/vue-custom-range-select/issues"
+  },
+  "homepage": "https://github.com/teodorDre/vue-custom-range-select#readme",
+  "license": "MIT",
+  "main": "./dist/flock.common.js",
+  "files": [
+    "dist/*",
+    "src/*",
+    "public/*",
+    "*.json",
+    "*.js"
+  ],
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
+    "build-bundle": "vue-cli-service build --target lib --name flock ./src/components/VueCustomRangeSelect.vue",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
