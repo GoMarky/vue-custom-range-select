@@ -6,7 +6,7 @@
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
     v-clickoutside="outsideClick")
-        +e.select-wrapper
+        +e.select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': isOpen && isMobile }")
             +e.overlay(v-show="isOpen && fullScreenMobile")
             +e.input-wrapper
                 +e.SPAN.current-value {{ currentValue.label || value[itemLabel] }}
@@ -368,11 +368,17 @@
         }
 
         .vcr-select__select-wrapper {
-            min-height: 100vh;
+
+            &_height_full {
+                min-height: 100vh;
+            }
         }
 
         .vcr-select__list {
             top: 30%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-radius: 10px;
         }
 
     }
