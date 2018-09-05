@@ -7,6 +7,7 @@
     v-bind:id="selectID"
     v-clickoutside="outsideClick")
         +e.select-wrapper
+            +e.overlay(v-show="isOpen && fullScreenMobile")
             +e.input-wrapper
                 +e.SPAN.current-value {{ currentValue.label || value[itemLabel] }}
                 +e.INPUT.selected(
@@ -21,6 +22,7 @@
                 v-on:keydown.down.prevent="stepDown"
                 v-on:keyup.enter="toggleMenu"
                 v-bind:placeholder="placeholder"
+                v-bind:disabled="disabled"
                 v-bind:readonly="!isSearchable"
                 v-model="currentValue.label || value[itemLabel]")
                 +e.SVG.toggle-icon#arrow(
@@ -29,11 +31,14 @@
                 fill="#bbbdc0"
                 viewBox="0 0 6 3")
                     polygon(points="0 0 3 3 6 0 0 0")
-            +e.UL.list(v-show="isOpen")
+            +e.UL.list(
+            v-show="isOpen"
+            ref="searchList"
+            v-bind:style="dropDownListStyles")
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
                     type="button"
-                    v-bind:class="{'vcr-select__item-button_current' : item.value === currentOption.value}"
+                    v-bind:class="{'vcr-select__item-button_current' : item.value === currentOption.value && isNavigateStart}"
                     v-on:mousedown.prevent="setValue(item)") {{ item.label }}
 
 </template>
@@ -41,6 +46,8 @@
 <script lang="ts">
     import Vue from 'vue'
     import helper from '../helper'
+
+    const $bodyLock = require('body-scroll-lock')
 
     export default Vue.extend({
         name: 'VueCustomRangeSelect',
@@ -55,7 +62,9 @@
                 isOpen: false,
                 isSearching: false,
                 inFocus: false,
-                currentOptionIndex: 0
+                currentOptionIndex: 0,
+                isNavigateStart: false,
+                isMobile: window.innerWidth <= 1280
             }
         },
         methods: {
@@ -66,8 +75,16 @@
             },
             toggleMenu () {
                 if (this.isOpen) {
+                    if (this.$props.fullScreenMobile && this.isMobile) {
+                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    }
+
                     this.currentValue = this.currentOption
                     this.$emit('input', this.currentValue.value)
+                } else {
+                    if (this.$props.fullScreenMobile && this.isMobile) {
+                        $bodyLock.disableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    }
                 }
 
                 this.isOpen = !this.isOpen
@@ -79,6 +96,10 @@
             },
             closeMenu () {
                 this.isOpen = false
+
+                if (this.$props.fullScreenMobile && this.isMobile) {
+                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                }
             },
             onSearchBlur () {
                 this.inFocus = false
@@ -92,16 +113,26 @@
             },
             outsideClick () {
                 this.closeMenu()
+
+                if (this.$props.fullScreenMobile && this.isMobile) {
+                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                }
             },
             onEscape () {
                 this.closeMenu()
+
+                if (this.$props.fullScreenMobile && this.isMobile) {
+                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                }
             },
             stepUp () {
+                this.isNavigateStart = true
                 if (this.currentOptionIndex > 0) {
                     this.currentOptionIndex -= 1
                 }
             },
             stepDown () {
+                this.isNavigateStart = true
                 if (this.currentOptionIndex < this.currentValues.length - 1) {
                     this.currentOptionIndex += 1
                 }
@@ -123,11 +154,24 @@
             currentOption (): any {
                 return this.currentValues[this.currentOptionIndex]
             },
+            currentIndex (): number {
+                return this.valuesAsArray.indexOf(this.currentValue.value)
+            },
             valuesAsArray (): any {
                 return this.currentValues
                     .map((it: any) => {
                         return it.value
                     })
+            },
+            dropDownListStyles (): object {
+                return {
+                    width: this.$props.width
+                }
+            },
+            dropDownStyles (): object {
+                return {
+                    width: this.$props.width
+                }
             }
         },
         props: {
@@ -184,31 +228,19 @@
                 type: Boolean,
                 default: true
             },
-            dropDownStyles: {
-                type: Object,
+            width: {
+                type: String,
                 required: false,
-                default () {
-                    return {}
-                }
-            },
-            optionHoverStyles: {
-                type: Object,
-                required: false,
-                default () {
-                    return {
-                        backgroundColor: '#e1f5f7'
-                    }
-                }
+                default: null
             }
         }
     })
 </script>
 
 <style lang="scss">
-
     .vcr-select {
-        width: 380px;
         margin-left: 20px;
+        width: 300px;
     }
 
     .vcr-select * {
@@ -227,6 +259,7 @@
         left: 15px;
         top: 10px;
         font-size: 16px;
+        pointer-events: none;
     }
 
     .vcr-select__selected, .vcr-select__selected:focus {
@@ -241,6 +274,10 @@
         outline: none;
         box-shadow: inset 0 0 0 0 red;
         border: 1px solid #bbbdc0;
+
+        &:disabled {
+            opacity: 0.5;
+        }
 
         &:focus {
             border-color: #0cc7ff;
@@ -258,11 +295,11 @@
     .vcr-select__list {
         position: absolute;
         z-index: 2;
+        width: 300px;
         top: 40px;
         left: 0;
         list-style: none;
         margin: 0;
-        width: 380px;
         padding: 0 10px;
         background-color: #ffffff;
         border-left: 1px solid #bbbdc0;
@@ -301,4 +338,42 @@
         }
     }
 
+    .vcr-select__overlay {
+        display: none;
+    }
+
+    @media (min-width: 320px) and (max-width: 1280px) {
+        .vcr-select {
+
+        }
+
+        .vcr-select__current-value {
+
+        }
+
+        .vcr-select__selected {
+
+        }
+
+        .vcr-select__overlay {
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 1;
+            opacity: .8;
+        }
+
+        .vcr-select__select-wrapper {
+            min-height: 100vh;
+        }
+
+        .vcr-select__list {
+            top: 30%;
+        }
+
+    }
 </style>

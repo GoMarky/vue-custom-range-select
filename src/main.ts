@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import VueClickoutside from './directives/click-outside';
+import VueClickoutside from './directives/click-outside'
 
 Vue.config.productionTip = false
-Vue.use(VueClickoutside);
+Vue.use(VueClickoutside)
 
 new Vue({
     router,
