@@ -6,7 +6,7 @@
         v-bind:options="options"
         itemLabel="text"
         itemValue="text")
-        div {{ output }}
+        div.result {{ output }}
 </template>
 
 <script lang="ts">
@@ -17,15 +17,15 @@
         data () {
             return {
                 options: [{
-                    value: 1,
+                    value: 'fdatedesc',
                     text: 'first'
                 },
                     {
-                        value: 2,
+                        value: 'fdatefrom',
                         text: 'second'
                     },
                     {
-                        value: 3,
+                        value: 'selectfrom',
                         text: 'third'
                     }],
                 output: ''
@@ -38,7 +38,7 @@
         },
         computed: {
             value (): object {
-                return this.options[0]
+                return this.options[1]
             }
         },
         components: {
@@ -52,4 +52,9 @@
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         color: #2c3e50;
     }
+
+    .result {
+        margin-top: 60px;
+    }
+
 </style>

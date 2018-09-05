@@ -6,8 +6,7 @@
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
     v-clickoutside="outsideClick")
-        +e.select-wrapper(
-        tabindex="-1")
+        +e.select-wrapper
             +e.input-wrapper
                 +e.SPAN.current-value {{ currentValue.label || value[itemLabel] }}
                 +e.INPUT.selected(
@@ -18,6 +17,8 @@
                 v-on:focus="onSearchFocus"
                 v-on:blur="onSearchBlur"
                 v-on:click="toggleMenu"
+                v-on:keydown.up.prevent="stepUp"
+                v-on:keydown.down.prevent="stepDown"
                 v-on:keyup.enter="toggleMenu"
                 v-bind:placeholder="placeholder"
                 v-bind:readonly="!isSearchable"
@@ -32,7 +33,7 @@
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
                     type="button"
-                    v-on:keyup.enter="setValue(item)"
+                    v-bind:class="{'vcr-select__item-button_current' : item.value === currentOption.value}"
                     v-on:mousedown.prevent="setValue(item)") {{ item.label }}
 
 </template>
@@ -53,7 +54,8 @@
                 searchValue: '',
                 isOpen: false,
                 isSearching: false,
-                inFocus: false
+                inFocus: false,
+                currentOptionIndex: 0
             }
         },
         methods: {
@@ -63,6 +65,11 @@
                 this.closeMenu()
             },
             toggleMenu () {
+                if (this.isOpen) {
+                    this.currentValue = this.currentOption
+                    this.$emit('input', this.currentValue.value)
+                }
+
                 this.isOpen = !this.isOpen
             },
             openMenu () {
@@ -88,6 +95,16 @@
             },
             onEscape () {
                 this.closeMenu()
+            },
+            stepUp () {
+                if (this.currentOptionIndex > 0) {
+                    this.currentOptionIndex -= 1
+                }
+            },
+            stepDown () {
+                if (this.currentOptionIndex < this.currentValues.length - 1) {
+                    this.currentOptionIndex += 1
+                }
             }
         },
         computed: {
@@ -102,6 +119,15 @@
             },
             isHavingValue (): boolean {
                 return this.currentValue.label.length > 0
+            },
+            currentOption (): any {
+                return this.currentValues[this.currentOptionIndex]
+            },
+            valuesAsArray (): any {
+                return this.currentValues
+                    .map((it: any) => {
+                        return it.value
+                    })
             }
         },
         props: {
@@ -164,6 +190,15 @@
                 default () {
                     return {}
                 }
+            },
+            optionHoverStyles: {
+                type: Object,
+                required: false,
+                default () {
+                    return {
+                        backgroundColor: '#e1f5f7'
+                    }
+                }
             }
         }
     })
@@ -222,12 +257,14 @@
 
     .vcr-select__list {
         position: absolute;
+        z-index: 2;
         top: 40px;
-        left: -1px;
+        left: 0;
         list-style: none;
         margin: 0;
-        width: 382px;
+        width: 380px;
         padding: 0 10px;
+        background-color: #ffffff;
         border-left: 1px solid #bbbdc0;
         border-right: 1px solid #bbbdc0;
         border-bottom: 1px solid #bbbdc0;
@@ -236,6 +273,10 @@
     .vcr-select__item {
         margin: 0;
         border-top: 1px solid #cccccc;
+
+        &:first-child {
+            border-top: 0;
+        }
     }
 
     .vcr-select__item-button {
@@ -252,6 +293,10 @@
         cursor: pointer;
 
         &:hover {
+            background-color: #e1f5f7;
+        }
+
+        &_current {
             background-color: #e1f5f7;
         }
     }
