@@ -64,7 +64,7 @@
                 inFocus: false,
                 currentOptionIndex: 0,
                 isNavigateStart: false,
-                isMobile: window.innerWidth <= 1280
+                isMobile: window.innerWidth <= 1024
             }
         },
         methods: {
@@ -242,6 +242,7 @@
             },
             fullScreenMobile: {
                 type: Boolean,
+                required: false,
                 default: true
             },
             width: {
@@ -358,7 +359,7 @@
         display: none;
     }
 
-    @media (min-width: 320px) and (max-width: 1280px) {
+    @media (min-width: 320px) and (max-width: 1024px) {
         .vcr-select {
 
         }
@@ -397,7 +398,7 @@
             padding-bottom: 10px;
             border-radius: 10px;
             overflow: auto;
-            height: 50vh;
+            max-height: 50vh;
         }
 
     }
