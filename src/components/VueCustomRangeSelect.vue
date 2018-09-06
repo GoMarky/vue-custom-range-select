@@ -140,13 +140,24 @@
         },
         computed: {
             currentValues (): any {
-                return this.$props.options
+                let array = this.$props.options
+
+                array = this.$props.options
                     .map((it: any) => {
                         return {
                             value: it.value,
                             label: it[this.$props.itemLabel]
                         }
                     })
+
+                if (this.$props.deleteDouble) {
+                    array = array.reduce((arr: any, item: any) => {
+                        const removed = arr.filter((i: any) => i.value !== item.value)
+                        return [...removed, item]
+                    }, [])
+                }
+
+                return array
             },
             isHavingValue (): boolean {
                 return this.currentValue.label.length > 0
@@ -195,6 +206,11 @@
             disabled: {
                 type: Boolean,
                 default: false
+            },
+            deleteDouble: {
+                type: Boolean,
+                required: false,
+                default: true
             },
             maxHeight: {
                 type: String,
@@ -370,15 +386,18 @@
         .vcr-select__select-wrapper {
 
             &_height_full {
+                overflow: hidden;
                 min-height: 100vh;
             }
         }
 
         .vcr-select__list {
-            top: 30%;
+            top: 20%;
             padding-top: 10px;
             padding-bottom: 10px;
             border-radius: 10px;
+            overflow: auto;
+            height: 50vh;
         }
 
     }

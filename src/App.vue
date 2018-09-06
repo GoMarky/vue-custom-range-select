@@ -16,10 +16,47 @@
     export default Vue.extend({
         data () {
             return {
-                options: [{
-                    value: 'fdatedesc',
-                    text: 'first'
-                },
+                options: [
+                    {
+                        value: 'fdatedesc',
+                        text: 'first'
+                    },
+                    {
+                        value: 'fdatefrom',
+                        text: 'second'
+                    },
+                    {
+                        value: 'selectfrom',
+                        text: 'third'
+                    },
+                    {
+                        value: 'fdatedesc',
+                        text: 'first'
+                    },
+                    {
+                        value: 'fdatefrom',
+                        text: 'second'
+                    },
+                    {
+                        value: 'selectfrom',
+                        text: 'third'
+                    },
+                    {
+                        value: 'fdatedesc',
+                        text: 'first'
+                    },
+                    {
+                        value: 'fdatefrom',
+                        text: 'second'
+                    },
+                    {
+                        value: 'selectfrom',
+                        text: 'third'
+                    },
+                    {
+                        value: 'fdatedesc',
+                        text: 'first'
+                    },
                     {
                         value: 'fdatefrom',
                         text: 'second'
