@@ -193,7 +193,7 @@
                     }, [])
                 }
 
-                if (this.$props.isSearchable && !this.isNavigateStart) {
+                if (this.$props.isSearchable) {
                     array = array.filter((it: any) => {
                         return it.label.indexOf(this.searchValue) !== -1
                     })
