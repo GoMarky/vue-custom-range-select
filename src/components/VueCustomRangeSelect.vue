@@ -6,12 +6,12 @@
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
     v-clickoutside="outsideClick")
-        +e.select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': isOpen && isMobile }")
-            +e.overlay(v-show="isOpen && fullScreenMobile")
+        +e.select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': bindMaxHeight }")
+            +e.overlay(v-show="isOpen && fullScreenMobile && !isSearchable")
             +e.input-wrapper
-                +e.SPAN.current-value {{ currentValue.label || value[itemLabel] }}
+                +e.SPAN.current-value(v-if="isSearching") {{ currentValue.label }}
                 +e.INPUT.selected(
-                type="search"
+                type="text"
                 ref="search"
                 tabindex="1"
                 v-on:keyup.esc="onEscape"
@@ -24,7 +24,7 @@
                 v-bind:placeholder="placeholder"
                 v-bind:disabled="disabled"
                 v-bind:readonly="!isSearchable"
-                v-model="currentValue.label || value[itemLabel]")
+                v-model="currentValue.label")
                 +e.SVG.toggle-icon#arrow(
                 width="12px"
                 height="6px"
@@ -34,12 +34,15 @@
             +e.UL.list(
             v-show="isOpen"
             ref="searchList"
+            v-bind:class="{'vcr-select__list_offset_top_medium' : !isSearchable || fullScreenMobile }"
             v-bind:style="dropDownListStyles")
                 +e.LI.item(v-for="item in currentValues")
                     +e.BUTTON.item-button(
                     type="button"
                     v-bind:class="{'vcr-select__item-button_current' : item.value === currentOption.value && isNavigateStart}"
                     v-on:mousedown.prevent="setValue(item)") {{ item.label }}
+                +e.LI.item(v-if="!currentValues.length")
+                    +e.SPAN.item-button._no_pointer No matched values found
 
 </template>
 
@@ -75,15 +78,24 @@
             },
             toggleMenu () {
                 if (this.isOpen) {
-                    if (this.$props.fullScreenMobile && this.isMobile) {
-                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    if (this.$props.isSearchable) {
+
+                    } else {
+                        if (this.$props.fullScreenMobile && this.isMobile) {
+                            $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                        }
                     }
 
+                    this.isNavigateStart = false
                     this.currentValue = this.currentOption
                     this.$emit('input', this.currentValue.value)
                 } else {
-                    if (this.$props.fullScreenMobile && this.isMobile) {
-                        $bodyLock.disableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    if (this.$props.isSearchable) {
+
+                    } else {
+                        if (this.$props.fullScreenMobile && this.isMobile) {
+                            $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                        }
                     }
                 }
 
@@ -100,6 +112,7 @@
                 if (this.$props.fullScreenMobile && this.isMobile) {
                     $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
                 }
+                this.isNavigateStart = false
             },
             onSearchBlur () {
                 this.inFocus = false
@@ -114,15 +127,25 @@
             outsideClick () {
                 this.closeMenu()
 
-                if (this.$props.fullScreenMobile && this.isMobile) {
-                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                if (this.$props.isSearchable) {
+
+                } else {
+                    if (this.$props.fullScreenMobile && this.isMobile) {
+                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    }
                 }
+
+                this.isNavigateStart = false
             },
             onEscape () {
                 this.closeMenu()
 
-                if (this.$props.fullScreenMobile && this.isMobile) {
-                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                if (this.$props.isSearchable) {
+
+                } else {
+                    if (this.$props.fullScreenMobile && this.isMobile) {
+                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    }
                 }
             },
             stepUp () {
@@ -138,11 +161,24 @@
                 }
             }
         },
+        watch: {
+            currentValue: {
+                handler (val) {
+                    this.searchValue = val.label
+                },
+                deep: true
+            }
+        },
         computed: {
+            bindMaxHeight (): boolean {
+                return (this.isOpen &&
+                    this.isMobile &&
+                    this.$props.fullScreenMobile)
+            },
             currentValues (): any {
                 let array = this.$props.options
 
-                array = this.$props.options
+                array = array
                     .map((it: any) => {
                         return {
                             value: it.value,
@@ -155,6 +191,12 @@
                         const removed = arr.filter((i: any) => i.value !== item.value)
                         return [...removed, item]
                     }, [])
+                }
+
+                if (this.$props.isSearchable && !this.isNavigateStart) {
+                    array = array.filter((it: any) => {
+                        return it.label.indexOf(this.searchValue) !== -1
+                    })
                 }
 
                 return array
@@ -218,7 +260,7 @@
             },
             isSearchable: {
                 type: Boolean,
-                default: false
+                default: true
             },
             multiple: {
                 type: Boolean,
@@ -243,7 +285,7 @@
             fullScreenMobile: {
                 type: Boolean,
                 required: false,
-                default: true
+                default: false
             },
             width: {
                 type: String,
@@ -287,7 +329,6 @@
         background-color: #ffffff;
         padding: 10px 15px;
         cursor: pointer;
-        font-size: 0;
         outline: none;
         box-shadow: inset 0 0 0 0 red;
         border: 1px solid #bbbdc0;
@@ -353,6 +394,11 @@
         &_current {
             background-color: #e1f5f7;
         }
+
+        &_no_pointer {
+            cursor: default;
+            pointer-events: none;
+        }
     }
 
     .vcr-select__overlay {
@@ -390,15 +436,24 @@
                 overflow: hidden;
                 min-height: 100vh;
             }
+
         }
 
         .vcr-select__list {
-            top: 20%;
             padding-top: 10px;
             padding-bottom: 10px;
             border-radius: 10px;
             overflow: auto;
+            top: 40px;
             max-height: 50vh;
+
+            &_offset_top_medium {
+                top: 20%;
+            }
+
+            &_offset_top_small {
+                top: 40px;
+            }
         }
 
     }
