@@ -260,7 +260,7 @@
             },
             isSearchable: {
                 type: Boolean,
-                default: true
+                default: false
             },
             multiple: {
                 type: Boolean,
@@ -285,7 +285,7 @@
             fullScreenMobile: {
                 type: Boolean,
                 required: false,
-                default: false
+                default: true
             },
             width: {
                 type: String,
