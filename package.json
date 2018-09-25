@@ -1,7 +1,7 @@
 {
   "name": "vue-custom-range-select",
   "description": "A Vue.js Plugin select plugin",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": {
     "name": "Andrew",
     "email": "swen295@gmail.com"
