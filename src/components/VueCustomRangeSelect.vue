@@ -1,14 +1,16 @@
 <template lang="pug">
-    div.vcr-select(
+    include ../helpers/pug/mixins.pug
+
+    +b.vcr-select(
     v-bind:dir="dir"
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
     v-click-outside="outsideClick")
-        div.vcr-select__select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': bindMaxHeight }")
-            div.vcr-select__overlay(v-show="isOpen && fullScreenMobile && !isSearchable")
-            div.vcr-select__input-wrapper
-                span.vcr-select__current-value(v-if="isSearching") {{ currentValue.label }}
-                input.vcr-select__selected(
+        +e.select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': bindMaxHeight }")
+            +e.overlay(v-show="isOpen && fullScreenMobile && !isSearchable")
+            +e.input-wrapper
+                +e.SPAN.current-value(v-if="isSearching") {{ currentValue.label }}
+                +e.INPUT.selected(
                 type="text"
                 ref="search"
                 tabindex="1"
@@ -23,24 +25,24 @@
                 v-bind:disabled="disabled"
                 v-bind:readonly="!isSearchable"
                 v-model="currentValue.label")
-                svg.vcr-select__toggle-icon#arrow(
+                +e.SVG.toggle-icon#arrow(
                 width="12px"
                 height="6px"
                 fill="#bbbdc0"
                 viewBox="0 0 6 3")
                     polygon(points="0 0 3 3 6 0 0 0")
-            ul.vcr-select__list(
+            +e.UL.list(
             v-show="isOpen"
             ref="searchList"
             v-bind:class="{'vcr-select__list_offset_top_medium' : !isSearchable || fullScreenMobile }"
             v-bind:style="dropDownListStyles")
-                li.vcr-select__item(v-for="item in currentValues")
-                    button.vcr-select__item-button(
+                +e.LI.item(v-for="item in currentValues")
+                    +e.BUTTON.item-button(
                     type="button"
                     v-bind:class="{'vcr-select__item-button_current' : item.value === currentOption.value && isNavigateStart}"
                     v-on:mousedown.prevent="setValue(item)") {{ item.label }}
-                li.vcr-select__item(v-if="!currentValues.length")
-                    span.vcr-select__item-button.vcr-select__item-button_no_pointer No matched values found
+                +e.LI.item(v-if="!currentValues.length")
+                    +e.SPAN.item-button._no_pointer No matched values found
 
 </template>
 
