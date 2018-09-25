@@ -5,7 +5,7 @@
     v-bind:dir="dir"
     v-bind:style="dropDownStyles"
     v-bind:id="selectID"
-    v-clickoutside="outsideClick")
+    v-click-outside="outsideClick")
         +e.select-wrapper(v-bind:class="{'vcr-select__select-wrapper_height_full': bindMaxHeight }")
             +e.overlay(v-show="isOpen && fullScreenMobile && !isSearchable")
             +e.input-wrapper
@@ -46,17 +46,16 @@
 
 </template>
 
-<script lang="ts">
-    import Vue from 'vue'
-    import helper from '../helper'
+<script>
+    import {randomString} from '../helpers'
+    import {enableBodyScroll, clearAllBodyScrollLocks, disableBodyScroll} from 'body-scroll-lock'
+    import clickOutside from '../directives/click-outside'
 
-    const $bodyLock = require('body-scroll-lock')
-
-    export default Vue.extend({
+    export default {
         name: 'VueCustomRangeSelect',
         data () {
             return {
-                selectID: `vue-custom-range-select-${helper.randomString(5)}`,
+                selectID: `vue-custom-range-select-${randomString(5)}`,
                 currentValue: {
                     label: '',
                     value: ''
@@ -70,19 +69,22 @@
                 isMobile: window.innerWidth <= 1024
             }
         },
+        directives: {
+            clickOutside
+        },
         methods: {
-            setValue (val: any) {
+            setValue (val) {
                 this.currentValue = val
                 this.$emit('input', val.value)
                 this.closeMenu()
             },
             toggleMenu () {
                 if (this.isOpen) {
-                    if (this.$props.isSearchable) {
+                    if (this.isSearchable) {
 
                     } else {
-                        if (this.$props.fullScreenMobile && this.isMobile) {
-                            $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                        if (this.fullScreenMobile && this.isMobile) {
+                            enableBodyScroll(this.$refs.searchList)
                         }
                     }
 
@@ -90,11 +92,11 @@
                     this.currentValue = this.currentOption
                     this.$emit('input', this.currentValue.value)
                 } else {
-                    if (this.$props.isSearchable) {
+                    if (this.isSearchable) {
 
                     } else {
-                        if (this.$props.fullScreenMobile && this.isMobile) {
-                            $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                        if (this.fullScreenMobile && this.isMobile) {
+                            disableBodyScroll(this.$refs.searchList)
                         }
                     }
                 }
@@ -109,8 +111,8 @@
             closeMenu () {
                 this.isOpen = false
 
-                if (this.$props.fullScreenMobile && this.isMobile) {
-                    $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                if (this.fullScreenMobile && this.isMobile) {
+                    enableBodyScroll(this.$refs.searchList)
                 }
                 this.isNavigateStart = false
             },
@@ -127,11 +129,10 @@
             outsideClick () {
                 this.closeMenu()
 
-                if (this.$props.isSearchable) {
-
+                if (this.isSearchable) {
                 } else {
-                    if (this.$props.fullScreenMobile && this.isMobile) {
-                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    if (this.fullScreenMobile && this.isMobile) {
+                        enableBodyScroll(this.$refs.searchList)
                     }
                 }
 
@@ -140,11 +141,10 @@
             onEscape () {
                 this.closeMenu()
 
-                if (this.$props.isSearchable) {
-
+                if (this.isSearchable) {
                 } else {
-                    if (this.$props.fullScreenMobile && this.isMobile) {
-                        $bodyLock.enableBodyScroll((this.$refs['searchList'] as HTMLElement))
+                    if (this.fullScreenMobile && this.isMobile) {
+                        enableBodyScroll(this.$refs.searchList)
                     }
                 }
             },
@@ -170,60 +170,60 @@
             }
         },
         computed: {
-            bindMaxHeight (): boolean {
+            bindMaxHeight () {
                 return (this.isOpen &&
                     this.isMobile &&
-                    this.$props.fullScreenMobile)
+                    this.fullScreenMobile)
             },
-            currentValues (): any {
-                let array = this.$props.options
+            currentValues () {
+                let array = this.options
 
                 array = array
-                    .map((it: any) => {
+                    .map((it) => {
                         return {
                             value: it.value,
-                            label: it[this.$props.itemLabel]
+                            label: it[this.itemLabel]
                         }
                     })
 
-                if (this.$props.deleteDouble) {
-                    array = array.reduce((arr: any, item: any) => {
-                        const removed = arr.filter((i: any) => i.value !== item.value)
+                if (this.deleteDouble) {
+                    array = array.reduce((arr, item) => {
+                        const removed = arr.filter((i) => i.value !== item.value)
                         return [...removed, item]
                     }, [])
                 }
 
-                if (this.$props.isSearchable) {
-                    array = array.filter((it: any) => {
+                if (this.isSearchable) {
+                    array = array.filter((it) => {
                         return it.label.indexOf(this.searchValue) !== -1
                     })
                 }
 
                 return array
             },
-            isHavingValue (): boolean {
+            isHavingValue () {
                 return this.currentValue.label.length > 0
             },
-            currentOption (): any {
+            currentOption () {
                 return this.currentValues[this.currentOptionIndex]
             },
-            currentIndex (): number {
+            currentIndex () {
                 return this.valuesAsArray.indexOf(this.currentValue.value)
             },
-            valuesAsArray (): any {
+            valuesAsArray () {
                 return this.currentValues
-                    .map((it: any) => {
+                    .map((it) => {
                         return it.value
                     })
             },
-            dropDownListStyles (): object {
+            dropDownListStyles () {
                 return {
-                    width: this.$props.width
+                    width: this.width
                 }
             },
-            dropDownStyles (): object {
+            dropDownStyles () {
                 return {
-                    width: this.$props.width
+                    width: this.width
                 }
             }
         },
@@ -293,7 +293,7 @@
                 default: null
             }
         }
-    })
+    }
 </script>
 
 <style lang="scss">

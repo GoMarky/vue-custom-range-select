@@ -1,0 +1,123 @@
+
+.vcr-select {
+  margin-left: 20px;
+  width: 300px;
+}
+.vcr-select * {
+  box-sizing: border-box;
+}
+.vcr-select__toggle-icon {
+  position: absolute;
+  top: 40%;
+  pointer-events: none;
+  right: 15px;
+}
+.vcr-select__current-value {
+  position: absolute;
+  left: 15px;
+  top: 10px;
+  font-size: 16px;
+  pointer-events: none;
+}
+.vcr-select__selected, .vcr-select__selected:focus {
+  display: block;
+  width: 100%;
+  height: 40px;
+  background: none;
+  background-color: #ffffff;
+  padding: 10px 15px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: inset 0 0 0 0 red;
+  border: 1px solid #bbbdc0;
+}
+.vcr-select__selected:disabled, .vcr-select__selected:focus:disabled {
+    opacity: 0.5;
+}
+.vcr-select__selected:focus, .vcr-select__selected:focus:focus {
+    border-color: #0cc7ff;
+}
+.vcr-select__select-wrapper {
+  position: relative;
+}
+.vcr-select__input-wrapper {
+  position: relative;
+}
+.vcr-select__list {
+  position: absolute;
+  z-index: 2;
+  width: 300px;
+  top: 40px;
+  left: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0 10px;
+  background-color: #ffffff;
+  border-left: 1px solid #bbbdc0;
+  border-right: 1px solid #bbbdc0;
+  border-bottom: 1px solid #bbbdc0;
+}
+.vcr-select__item {
+  margin: 0;
+  border-top: 1px solid #cccccc;
+}
+.vcr-select__item:first-child {
+    border-top: 0;
+}
+.vcr-select__item-button {
+  background: none;
+  border: none;
+  height: 40px;
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 16px;
+  color: #222222;
+  width: 100%;
+  text-align: left;
+  display: block;
+  cursor: pointer;
+}
+.vcr-select__item-button:hover {
+    background-color: #e1f5f7;
+}
+.vcr-select__item-button_current {
+    background-color: #e1f5f7;
+}
+.vcr-select__item-button_no_pointer {
+    cursor: default;
+    pointer-events: none;
+}
+.vcr-select__overlay {
+  display: none;
+}
+@media (min-width: 320px) and (max-width: 1024px) {
+.vcr-select__overlay {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: #000;
+    z-index: 1;
+    opacity: .8;
+}
+.vcr-select__select-wrapper_height_full {
+    overflow: hidden;
+    min-height: 100vh;
+}
+.vcr-select__list {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+    overflow: auto;
+    top: 40px;
+    max-height: 50vh;
+}
+.vcr-select__list_offset_top_medium {
+      top: 20%;
+}
+.vcr-select__list_offset_top_small {
+      top: 40px;
+}
+}

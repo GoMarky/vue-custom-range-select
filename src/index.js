@@ -1,4 +1,4 @@
-import VueCustomRangeSelect from './components/VueCustomRangeSelect'
+import VueCustomRangeSelect from './components/VueCustomRangeSelect.vue'
 
 // Install the components
 export function install(Vue, options) {
@@ -8,18 +8,24 @@ export function install(Vue, options) {
     })
 }
 
+// Expose the components
 export {
     VueCustomRangeSelect
 }
 
+/* -- Plugin definition & Auto-install -- */
+/* You shouldn't have to modify the code below */
+
+// Plugin
 const plugin = {
     /* eslint-disable no-undef */
     version: VERSION,
-    install
+    install,
 }
 
 export default plugin
 
+// Auto-install
 let GlobalVue = null
 if (typeof window !== 'undefined') {
     GlobalVue = window.Vue
